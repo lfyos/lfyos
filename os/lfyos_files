@@ -1,0 +1,11 @@
+for v in `find . -type f -print|grep "\.[Ss][ ]*$"|sed "s/\.[sS][ ]*$//"`
+do
+	if [ $v != \./arch/boot/head ]
+	then 
+		echo $v.o 
+	fi
+done 
+for v in `find . -type f -print|grep "\.[Cc][ ]*$"|sed "s/\.[cC][ ]*$//"`
+do
+	echo $v.o 
+done 

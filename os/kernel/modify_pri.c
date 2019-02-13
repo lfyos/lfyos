@@ -1,0 +1,91 @@
+#include"kernel.h" 
+void modify_thread_priority(int thread_id,
+	int new_priority,int new_cpu_set_id)
+{
+	int ready_id,run_id;
+	struct thread_struct *t,*ready_t,*run_t;
+
+	switch((t=&(os->os_thread[thread_id]))->state){
+	case THREAD_READY_STATE:
+		if(new_cpu_set_id>=0)
+		if(new_cpu_set_id<OS_CPU_SET_NUMBER)
+		if((t->cpu_set_id)!=new_cpu_set_id){
+			remove_from_heap(thread_id);
+			t->cpu_set_id=new_cpu_set_id;
+			t->priority=new_priority;
+			insert_into_heap(thread_id);
+			break;
+		}
+		if((t->priority)==new_priority)
+			break;
+		if((os->os_cpu_set[t->cpu_set_id].
+			thread_heap.run_thread_number)>0)
+		{
+			run_id=os->os_cpu_set[t->cpu_set_id].
+				thread_heap.run_heap[0].thread_id;
+			run_t=&(os->os_thread[run_id]);
+			if(new_priority<run_t->priority){
+				remove_from_heap(thread_id);
+				t->priority=new_priority;
+				insert_into_heap(thread_id);
+				break;
+			}
+		}
+		if(new_priority>(t->priority)){
+			t->priority=new_priority;
+			ready_heap_down_deal(thread_id);
+			break;
+		}
+		if(new_priority<(t->priority)){
+			t->priority=new_priority;
+			ready_heap_up_deal(thread_id);
+			break;
+		}
+		break;
+	case THREAD_RUN_STATE:
+		if(new_cpu_set_id>=0)
+		if(new_cpu_set_id<OS_CPU_SET_NUMBER)
+		if((t->cpu_set_id)!=new_cpu_set_id){
+			remove_from_heap(thread_id);
+			t->cpu_set_id=new_cpu_set_id;
+			t->priority=new_priority;
+			insert_into_heap(thread_id);
+			break;
+		}
+		if((t->priority)==new_priority)
+			break;
+		if((os->os_cpu_set[t->cpu_set_id].
+			thread_heap.ready_thread_number)>0)
+		{
+			ready_id=os->os_cpu_set[t->cpu_set_id].
+				thread_heap.ready_heap[0].thread_id;
+			ready_t=&(os->os_thread[ready_id]);
+			if(new_priority>(ready_t->priority)){
+				remove_from_heap(thread_id);
+				t->priority=new_priority;
+				insert_into_heap(thread_id);
+				break;
+			}
+		}
+		if(new_priority>(t->priority)){
+			t->priority=new_priority;
+			run_heap_up_deal(thread_id);
+			break;
+		}
+		if(new_priority<(t->priority)){
+			t->priority=new_priority;
+			run_heap_down_deal(thread_id);
+			break;
+		}
+		break;
+	case THREAD_SLEEP_STATE:
+		if(new_cpu_set_id>=0)
+		if(new_cpu_set_id<OS_CPU_SET_NUMBER)
+			t->cpu_set_id=new_cpu_set_id;
+		t->priority=new_priority;
+		break;
+	default:
+		break;
+	}
+	return;
+}

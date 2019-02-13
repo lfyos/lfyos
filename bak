@@ -1,0 +1,28 @@
+cd os
+make clean
+cd ..
+LINE=`cat \`find os -type f -print\`|wc -l`
+TEST_LINE=`cat \`find os/test -type f -print\`|wc -l`
+ARCH_LINE=`cat \`find os/arch -type f -print\`|wc -l`
+KERNEL_LINE=`cat \`find os/kernel -type f -print\`|wc -l`
+DRIVER_LINE=`cat \`find os/driver -type f -print\`|wc -l`
+INCLUDE_LINE=`cat \`find os/include -type f -print\`|wc -l`
+DNS_LINE=`cat \`find os/dns -type f -print\`|wc -l`
+PLATFORM_LINE=`cat \`find os/platform -type f -print\`|wc -l`
+MAIN_LINE=`for v in \`ls os\`;do if [ -f os/$v ] ;then cat os/$v;fi;done|wc -l` 
+
+rm -f lfyos.tar
+tar -cvf lfyos.tar bak os
+cd os
+make
+cd ..
+
+echo total source code lines:$LINE-$TEST_LINE=`expr $LINE  - $TEST_LINE`
+
+echo "arch      "$ARCH_LINE
+echo "kernel    "$KERNEL_LINE
+echo "driver    "$DRIVER_LINE
+echo "include   "$INCLUDE_LINE
+echo "dns       "$DNS_LINE
+echo "platform  "$PLATFORM_LINE
+echo "main      "$MAIN_LINE
